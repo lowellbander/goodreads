@@ -1,0 +1,23 @@
+{
+  "name": "goodreads",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lowellbander/goodreads.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lowellbander/goodreads/issues"
+  },
+  "homepage": "https://github.com/lowellbander/goodreads#readme",
+  "dependencies": {
+    "request": "^2.74.0",
+    "xml2js": "^0.4.17"
+  }
+}
