@@ -54,9 +54,10 @@ function booksWithStats(books, whenDone) {
 
 getToReadShelf(1, [], function(books) {
   booksWithStats(books, function(books) {
-    var minNumRatings = 1000;
+    var minNumRatings = 100;
     var results = books.filter(_ => _.nRatings >= minNumRatings)
                        .sort((a, b) => b.average_rating - a.average_rating);
+    log("Books with at least " + minNumRatings + " ratings");
     log(results)
   });
 });
