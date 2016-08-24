@@ -8,7 +8,7 @@ var url = `https://www.goodreads.com/user/show/${id}.xml?key=${key}`;
 var log = _ => console.log(_);
 
 function getToReadShelf(page, books, whenDone) {
-  var booksPerPage = 200; // max is 200
+  var booksPerPage = 1; // max is 200
   var url = `https://www.goodreads.com/review/list?v=2&id=${id}&key=${key}&shelf=to-read&per_page=${booksPerPage}&page=${page}`;
   request(url, function (error, response, body) {
     var xml = body;
@@ -25,7 +25,8 @@ function getToReadShelf(page, books, whenDone) {
         };
       });
       books = books.concat(newBooks);
-      if (total === end) {
+      //if (total === end) {
+      if (page === 3) {
         whenDone(books);
       } else {
         getToReadShelf(page + 1, books, whenDone)
@@ -56,7 +57,10 @@ getToReadShelf(1, [], function(books) {
     var minNumRatings = 100;
     var results = books.filter(_ => _.nRatings >= minNumRatings)
                        .sort((a, b) => b.average_rating - a.average_rating);
-    log(`Books from your To-Read Shelf with at least {$minNumRatings}ratings, highest rated first.\n`);
+
+    log('here')
+    return;
+    log(`Books from your To-Read Shelf with at least ${minNumRatings} ratings, highest rated first.\n`);
     log('|Title|Average Rating|Number of Ratings|');
     log('|---|---|---|')
     for (var i in results) {
