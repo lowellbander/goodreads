@@ -21,6 +21,7 @@ function getToReadShelf(page, books, whenDone) {
         return {
           title: book.title[0],
           isbn: book.isbn[0],
+          link: book.link[0],
         };
       });
       books = books.concat(newBooks);
@@ -55,12 +56,12 @@ getToReadShelf(1, [], function(books) {
     var minNumRatings = 100;
     var results = books.filter(_ => _.nRatings >= minNumRatings)
                        .sort((a, b) => b.average_rating - a.average_rating);
-    log("Books with at least " + minNumRatings + " ratings\n");
+    log(`Books from your To-Read Shelf with at least {$minNumRatings}ratings, highest rated first.\n`);
     log('|Title|Average Rating|Number of Ratings|');
     log('|---|---|---|')
     for (var i in results) {
       var book = results[i];
-      log(`|${book.title}|${book.average_rating}|${book.nRatings}|`);
+      log(`|[${book.title}](${book.link})|${book.average_rating}|${book.nRatings}|`);
     }
   });
 });
