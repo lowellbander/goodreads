@@ -17,8 +17,6 @@ function drawTick({x, color, img}) {
   img.line(x, y, x, y + length, color);
 }
 
-var even = _ => (_ % 2) === 0;
-
 function drawTicks({howMany, x, img, color}) {
   var offset = howMany === 1 ? 0 : howMany;
   var spacing = 3;
@@ -55,11 +53,6 @@ function drawHist({values, filename}) {
   img.saveFile(filename);
   img.destroy();
 }
-
-//drawHist({
-//  values: [0, 0, 0, 0, 100],
-//  filename: 'success.png',
-//});
 
 module.exports = drawHist;
 
