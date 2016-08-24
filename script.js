@@ -3,14 +3,13 @@ var parseString = require('xml2js').parseString;
 
 var key = "jWA0Q2gjchUnT2wnfmpdQ";
 var id = "27312321"
-var url = "https://www.goodreads.com/user/show/" + id  +".xml?key=" + key;
+var url = `https://www.goodreads.com/user/show/${id}.xml?key=${key}`;
 
 var log = _ => console.log(_);
 
 function getToReadShelf(page, books, whenDone) {
-  var booksPerPage = 200; // max is 200
-  var url = "https://www.goodreads.com/review/list?v=2&id=" + id + 
-    "&key=" + key + "&shelf=to-read&per_page=" + booksPerPage + "&page=" + page;
+  var booksPerPage = 1; // max is 200
+  var url = `https://www.goodreads.com/review/list?v=2&id=${id}&key=${key}&shelf=to-read&per_page=${booksPerPage}&page=${page}`;
   request(url, function (error, response, body) {
     var xml = body;
     parseString(xml, function (err, result) {
@@ -35,8 +34,7 @@ function getToReadShelf(page, books, whenDone) {
 }
 
 function booksWithStats(books, whenDone) {
-  var url = "https://www.goodreads.com/book/review_counts.json?key=" + key + 
-    "&isbns=" + books.map(_ => _.isbn).join(',');
+  var url = `https://www.goodreads.com/book/review_counts.json?key=${key}&isbns=${books.map(_ => _.isbn).join(',')}`;
   request(url, function (error, response, body) {
     var stats = JSON.parse(body).books;
     var withStats = [];
