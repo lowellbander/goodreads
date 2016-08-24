@@ -1,50 +1,63 @@
 var gd = require('node-gd');
 
 var canvasWidth = 150;
-var canvasHeight = 100;
+var canvasHeight = 120;
 var deltaX = canvasWidth / 6;
-
-var img = gd.createSync(150, 100);
-
-var white = img.colorAllocate(255,255,255);
-var grey = img.colorAllocate(125, 125, 125);
 
 var log = _ => console.log(_);
 
-function dot (x, y) {
-  var d = 5;
-  img.filledEllipse(x, y, d, d, grey);
+function drawDot ({x, y, color, img}) {
+  var d = 4;
+  img.filledEllipse(x, y, d, d, color);
 }
 
-function drawTick(x) {
+function drawTick({x, color, img}) {
   var length = 5;
-  var y = 10;
-  img.line(x, y, x, y + length, grey);
+  var y = 110;
+  img.line(x, y, x, y + length, color);
 }
 
-function drawTicks({howMany, x}) {
+var even = _ => (_ % 2) === 0;
+
+function drawTicks({howMany, x, img, color}) {
+  var offset = howMany === 1 ? 0 : howMany;
   var spacing = 3;
-  var offset = -5;
   for (var i = 0; i < howMany; ++i) {
-    drawTick(x + (i * spacing) + offset);
+    drawTick({
+      x: x + (i * spacing) - offset,
+      color: color,
+      img: img,
+    });
   }
 }
 
-function draw() {
+function drawHist({values, filename}) {
+  var img = gd.createSync(canvasWidth, canvasHeight);
+  var white = img.colorAllocate(255,255,255);
+  var grey = img.colorAllocate(125, 125, 125);
 
-  for (var i = 1; i <= 5; ++i) {
-    drawTicks({howMany: i, x: i * deltaX});
+  for (var i = 0; i < values.length; ++i) {
+    var x = (i + 1) * deltaX;
+    drawTicks({
+      howMany: i + 1,
+      x: x,
+      img: img,
+      color: grey,
+    });
+    drawDot({
+      x: x,
+      y: 105 - values[i],
+      img: img,
+      color: grey,
+    });
   }
 
-  var l = [1, 2, 3, 4, 5];
-
-  for (var i = 1; i <= 5; ++i) {
-    dot(i * deltaX, 75);
-  }
-
-  
-  img.saveFile('./test.png');
+  img.saveFile(filename);
   img.destroy();
 }
 
-draw()
+drawHist({
+  values: [0, 0, 0, 0, 100],
+  filename: 'testFile.png',
+});
+
