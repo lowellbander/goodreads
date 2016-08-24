@@ -1,5 +1,6 @@
 var request = require('request');
 var parseString = require('xml2js').parseString;
+var drawHist = require('./histogram.js');
 
 var key = "jWA0Q2gjchUnT2wnfmpdQ";
 var id = "27312321"
@@ -16,7 +17,7 @@ function getToReadShelf(page, books, whenDone) {
       var total = result.GoodreadsResponse.reviews[0]['$'].total;
       var end = result.GoodreadsResponse.reviews[0]['$'].end;
       var bookObjs = result.GoodreadsResponse.reviews[0].review;
-      var newBooks = bookObjs.map(function(book) {
+      var newBooks = bookObjs.map(book => {
         book = book.book[0];
         return {
           title: book.title[0],
@@ -39,31 +40,53 @@ function booksWithStats(books, whenDone) {
   request(url, function (error, response, body) {
     var stats = JSON.parse(body).books;
     var withStats = [];
-    for (var i in stats) {
-      var stat = stats[i];
+    stats.forEach(stat => {
       var book = books.filter(_ => _.isbn === stat.isbn)[0];
       book.nRatings = stat.work_ratings_count;
       book.average_rating = parseFloat(stat.average_rating);
       delete book.isbn;
       withStats.push(book);
-    }
+    });
     whenDone(withStats);
   });
 }
 
-getToReadShelf(1, [], function(books) {
-  booksWithStats(books, function(books) {
-    var minNumRatings = 100;
-    var results = books.filter(_ => _.nRatings >= minNumRatings)
-                       .sort((a, b) => b.average_rating - a.average_rating);
-
+function output(books, minNumRatings) {
     log(`Books from your To-Read Shelf with at least ${minNumRatings} ratings, highest rated first.\n`);
-    log('|Title|Average Rating|Number of Ratings|');
-    log('|---|---|---|')
-    for (var i in results) {
-      var book = results[i];
-      log(`|[${book.title}](${book.link})|${book.average_rating}|${book.nRatings}|`);
+    log('|Title|Average Rating|Histogram|Number of Ratings|');
+    log('|---|---|---|---|')
+    books.forEach(book => {
+      log(`|[${book.title}](${book.link})|${book.average_rating}|![${book.title}](hists/${book.title}.png)|${book.nRatings}|`);
+    })
+}
+
+function getHistData(books, index, whenDone) {
+  request(books[index].link, function (error, response, body) {
+    var results = body.match(/(\d+)% \(\d+\)/g);
+    var values = results
+      .slice(0, 5)
+      .map(_ => _.split('%')[0])
+      .map(_ => parseInt(_));
+    values.reverse();
+    drawHist({values: values, filename: `hists/${books[index].title}.png`});
+
+    if (index === books.length - 1) {
+      whenDone(books);
+    } else {
+      getHistData(books, index + 1, whenDone);
     }
+
+  });
+}
+
+getToReadShelf(1, [], books => {
+  booksWithStats(books, books => {
+    var minNumRatings = 100;
+    books = books.filter(_ => _.nRatings >= minNumRatings)
+                       .sort((a, b) => b.average_rating - a.average_rating);
+    getHistData(books, 0, books => {
+      output(books, minNumRatings);
+    })
   });
 });
 

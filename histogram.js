@@ -56,8 +56,10 @@ function drawHist({values, filename}) {
   img.destroy();
 }
 
-drawHist({
-  values: [0, 0, 0, 0, 100],
-  filename: 'testFile.png',
-});
+//drawHist({
+//  values: [0, 0, 0, 0, 100],
+//  filename: 'success.png',
+//});
+
+module.exports = drawHist;
 
